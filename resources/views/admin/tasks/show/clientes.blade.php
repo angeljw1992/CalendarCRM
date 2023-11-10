@@ -73,6 +73,32 @@
 
                         </tr>
                     @endforeach
+                    <tr>
+
+                        <td>
+                            <h1><i class="fa fa-plus"></i></h1>
+                        </td>
+                        <td colspan="6">
+                            <form action="{{ route('admin.tasks.client.add') }}" method="post" class="agcl">
+                                @csrf
+                                <input type="hidden" name="task_id" value="{{ $task->id }}">
+
+                                <div class="form-group">
+                                    <select name="client_id" class="form-control sl2" style="width:100%">
+                                    </select>
+                                </div>
+
+
+
+                            </form>
+
+                        </td>
+                        <td>
+                            <button role="button" type="button" class="btn btn-secondary agr">Agregar CLiente</button>
+
+
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -81,59 +107,38 @@
 
 
 
-
-<!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-
-            <form action="{{ route('admin.tasks.client.add') }}" method="post">
-                @csrf
-                <input type="hidden" name="task_id" value="{{ $task->id }}">
-
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Agregar Cliente</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-
-                    <div class="form-group">
-                        <label>Cliente</label>
-                        <select name="client_id" class="form-control">
-
-                            @foreach ($clients_all as $item)
-                                <option value="{{ $item->id }}">
-                                    {{ $item->fullname . ' - ' . $item->identificacion }}</option>
-                            @endforeach
-
-                        </select>
-                    </div>
-
-
-
-
-
-                </div>
-                <div class="modal-footer">
-                    <button role="button" type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                    <button type="submit" class="btn btn-primary">Agregar</button>
-                </div>
-
-
-            </form>
-
-
-
-
-        </div>
-    </div>
-</div>
 @section('scripts')
     <script>
         $(function() {
+
+            $('.agr').click(function(){
+                $('.agcl').submit();
+            });
+
+            $('.sl2').select2({
+                ajax: {
+                    url: "{{ route('admin.tasks.client.list') }}",
+                    dataType: 'json',
+                    processResults: function(data) {
+                        return {
+
+                            results: $.map(data.data, function(item) {
+                                return {
+                                    text: item.fullname,
+                                    id: item.id,
+                                }
+                            })
+                        };
+                    }
+                }
+            });
+
+
+
+
+
+
+
             let dtButtons = $.extend(true, [], $.fn.dataTable.defaults.buttons)
 
             $.extend(true, $.fn.dataTable.defaults, {
@@ -144,13 +149,6 @@
                 pageLength: 100,
             });
 
-            let table = $('.datatable-Cliente:not(.ajaxTable)').DataTable({
-                //  buttons: dtButtons
-            })
-            $('a[data-toggle="tab"]').on('shown.bs.tab click', function(e) {
-                $($.fn.dataTable.tables(true)).DataTable()
-                    .columns.adjust();
-            });
 
 
             $(".rem_tc").click(function(e) {
@@ -158,7 +156,7 @@
                 e.stopPropagation();
 
                 var form = {}
-                form.id =  $(this).attr("data-id");
+                form.id = $(this).attr("data-id");
                 form._token = '{{ csrf_token() }}';
 
                 var url = "{{ route('admin.tasks.client.destroy') }}";
@@ -170,14 +168,14 @@
                     content: "¿Estás seguro de que quieres realizar esta operación?",
                     buttons: {
                         "Sí": function() {
- 
+
 
                             $.ajax({
                                 type: 'post',
                                 url: url,
                                 data: JSON.stringify(form),
                                 processData: false,
-                        contentType: "application/json",
+                                contentType: "application/json",
                                 cache: false,
                                 beforeSend: function() {
 
@@ -186,7 +184,7 @@
                                 success(response) {},
                                 statusCode: {
                                     301: function() {
-                                     location.reload();
+                                        location.reload();
                                     }
                                 },
                                 xhr: function() {
@@ -197,7 +195,7 @@
                                 },
                             }).always(function(response, type, data) {
 
-                          location.reload();
+                                location.reload();
 
                             });
 
@@ -217,6 +215,10 @@
 
             });
 
+
+            let table = $('.datatable-Cliente:not(.ajaxTable)').DataTable({
+                //  buttons: dtButtons
+            }) 
 
         });
     </script>

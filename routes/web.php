@@ -72,6 +72,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::resource('asistencia', 'AsistenciaController');
 
     // Task Status
+    Route::get('task-statuses/list', 'TaskStatusController@list')->name('task-statuses.list');
     Route::delete('task-statuses/destroy', 'TaskStatusController@massDestroy')->name('task-statuses.massDestroy');
     Route::resource('task-statuses', 'TaskStatusController');
 
@@ -84,6 +85,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::post('tasks/parse-csv-import', 'TaskController@parseCsvImport')->name('tasks.parseCsvImport');
     Route::post('tasks/process-csv-import', 'TaskController@processCsvImport')->name('tasks.processCsvImport');
     Route::post('tasks/client/add', 'TaskController@addClient')->name('tasks.client.add');
+    Route::get('tasks/client/list', 'TaskController@listClient')->name('tasks.client.list');
     Route::post('tasks/client/remove', 'TaskController@destroyTaskClient')->name('tasks.client.destroy');
     Route::resource('tasks', 'TaskController');
 

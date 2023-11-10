@@ -9,6 +9,7 @@ use App\Http\Requests\UpdateTaskStatusRequest;
 use App\Models\TaskStatus;
 use Gate;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
 
 class TaskStatusController extends Controller
@@ -34,6 +35,17 @@ class TaskStatusController extends Controller
         $taskStatus = TaskStatus::create($request->all());
 
         return redirect()->route('admin.task-statuses.index');
+    }
+    public function list(Request $request)
+    { 
+        $q = DB::table("task_statuses");
+        if($request->has("q")){
+            $q->where('name','like',"%".$request->get("q")."%");
+        }
+
+        $clients_all = $q->get();
+
+        return response()->json(['data'=>$clients_all]);
     }
 
     public function edit(TaskStatus $taskStatus)

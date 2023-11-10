@@ -11,11 +11,8 @@
             @csrf
             <div class="form-group">
                 <label>{{ trans('cruds.task.fields.name') }}</label>
-                <select class="form-control {{ $errors->has('name') ? 'is-invalid' : '' }}" name="name" id="name">
-                    <option value disabled {{ old('name', null) === null ? 'selected' : '' }}>{{ trans('global.pleaseSelect') }}</option>
-                    @foreach(App\Models\Task::NAME_SELECT as $key => $label)
-                        <option value="{{ $key }}" {{ old('name', '') === (string) $key ? 'selected' : '' }}>{{ $label }}</option>
-                    @endforeach
+                <select class="form-control sl2 {{ $errors->has('name') ? 'is-invalid' : '' }}" name="name" id="name">
+                    <option value disabled {{ old('name', null) === null ? 'selected' : '' }}>{{ trans('global.pleaseSelect') }}</option> 
                 </select>
                 @if($errors->has('name'))
                     <span class="text-danger">{{ $errors->first('name') }}</span>
@@ -99,4 +96,33 @@
 
 
 
+@endsection
+@section('scripts')
+    <script>
+
+$(function(){
+
+
+    $('.sl2').select2({
+                ajax: {
+                    url: "{{ route('admin.task-statuses.list') }}",
+                    dataType: 'json',
+                    processResults: function(data) {
+                        return {
+
+                            results: $.map(data.data, function(item) {
+                                return {
+                                    text: item.name,
+                                    id: item.id,
+                                }
+                            })
+                        };
+                    }
+                }
+            });
+
+
+});
+
+    </script>
 @endsection

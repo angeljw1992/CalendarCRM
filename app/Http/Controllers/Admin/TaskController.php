@@ -99,9 +99,21 @@ class TaskController extends Controller
         ->join("clientes","task_client.client_id","clientes.id")
         ->get();
 
-        $clients_all = Cliente::get();
+        $clients_all = [];
 
         return view('admin.tasks.show', compact('task','clients','clients_all'));
+    }
+    public function listClient(Request $request)
+    { 
+        $q = DB::table("clientes");
+        if($request->has("q")){
+            $q->where('fullname','like',"%".$request->get("q")."%");
+            $q->orWhere('identificacion','like',"%".$request->get("q")."%");
+        }
+
+        $clients_all = $q->get();
+
+        return response()->json(['data'=>$clients_all]);
     }
 
     public function destroyTaskClient(Request $request)
