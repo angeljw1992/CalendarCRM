@@ -95,8 +95,8 @@
         {{ trans('global.relatedData') }}
     </div>
     <ul class="nav nav-tabs" role="tablist" id="relationship-tabs">
-        <li class="nav-item">
-            <a class="nav-link" href="#estudiante_pagos" role="tab" data-toggle="tab">
+        <li class="nav-item active">
+            <a class="nav-link  active" href="#estudiante_pagos" role="tab" data-toggle="tab">
                 {{ trans('cruds.pago.title') }}
             </a>
         </li>
@@ -105,13 +105,21 @@
                 {{ trans('cruds.asistencium.title') }}
             </a>
         </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#estudiante_task" role="tab" data-toggle="tab">
+                {{ 'Tareas' }}
+            </a>
+        </li>
     </ul>
     <div class="tab-content">
-        <div class="tab-pane" role="tabpanel" id="estudiante_pagos">
+        <div class="tab-pane active" role="tabpanel" id="estudiante_pagos">
             @includeIf('admin.clientes.relationships.estudiantePagos', ['pagos' => $cliente->estudiantePagos])
         </div>
         <div class="tab-pane" role="tabpanel" id="estudiante_asistencia">
             @includeIf('admin.clientes.relationships.estudianteAsistencia', ['asistencia' => $cliente->estudianteAsistencia])
+        </div>
+        <div class="tab-pane" role="tabpane2" id="estudiante_task">
+            @includeIf('admin.clientes.relationships.tasks', ['tasks' => $taks])
         </div>
     </div>
 </div>

@@ -10,6 +10,7 @@ use App\Http\Requests\UpdateClienteRequest;
 use App\Models\Cliente;
 use Gate;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
 
 class ClientesController extends Controller
@@ -59,7 +60,20 @@ class ClientesController extends Controller
 
         $cliente->load('estudiantePagos', 'estudianteAsistencia');
 
-        return view('admin.clientes.show', compact('cliente'));
+        $tasks = Db::table("tasks")->select("tasks.*")
+        ->join("task_client","task_client.task_id","tasks.id")
+        ->join("clientes","task_client.client_id","clientes.id")
+        ->where("clientes.id",$cliente->id)
+        ->get();
+ 
+        
+        return view(
+            'admin.clientes.show',
+            [
+                'cliente' => $cliente,
+                'taks' => $tasks
+            ]
+        );
     }
 
     public function destroy(Cliente $cliente)

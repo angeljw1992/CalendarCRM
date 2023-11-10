@@ -1,17 +1,24 @@
 <?php
 
-Route::redirect('/', '/login');
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
+
+Auth::routes(['register' => false]);
+
+Route::redirect('/', url("login"))->middleware([App\Http\Middleware\IsNotLogged::class]);
+
 Route::get('/home', function () {
+
     if (session('status')) {
         return redirect()->route('admin.home')->with('status', session('status'));
     }
 
     return redirect()->route('admin.home');
-});
+})->middleware([App\Http\Middleware\IsLogged::class])->name("home");
 
-Auth::routes(['register' => false]);
 
-Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'middleware' => ['auth']], function () {
+Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'middleware' => [App\Http\Middleware\IsLogged::class]], function () {
+  
     Route::get('/', 'HomeController@index')->name('home');
     // Permissions
     Route::delete('permissions/destroy', 'PermissionsController@massDestroy')->name('permissions.massDestroy');
@@ -76,6 +83,8 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::delete('tasks/destroy', 'TaskController@massDestroy')->name('tasks.massDestroy');
     Route::post('tasks/parse-csv-import', 'TaskController@parseCsvImport')->name('tasks.parseCsvImport');
     Route::post('tasks/process-csv-import', 'TaskController@processCsvImport')->name('tasks.processCsvImport');
+    Route::post('tasks/client/add', 'TaskController@addClient')->name('tasks.client.add');
+    Route::post('tasks/client/remove', 'TaskController@destroyTaskClient')->name('tasks.client.destroy');
     Route::resource('tasks', 'TaskController');
 
     // Tasks Calendar

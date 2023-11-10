@@ -91,5 +91,7 @@
 </div>
 
 
+@includeIf('admin.tasks.show.clientes', ['clientes' => $clients,'task'=>$task])
+
 
 @endsection

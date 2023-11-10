@@ -7,9 +7,11 @@ use App\Http\Controllers\Traits\CsvImportTrait;
 use App\Http\Requests\MassDestroyTaskRequest;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
+use App\Models\Cliente;
 use App\Models\Task;
 use Gate;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
 
 class TaskController extends Controller
@@ -39,6 +41,39 @@ class TaskController extends Controller
         return redirect()->route('admin.tasks.index');
     }
 
+
+    public function addClient(Request $request)
+    {
+        $client_id = $request->get("client_id");
+        $task_id = $request->get("task_id");
+
+
+        $task = Task::find($task_id);
+        $client = Cliente::find($client_id);
+
+
+
+        $cli = DB::table('task_client')
+            ->where('task_id', $task->id)
+            ->where('client_id', $client->id)
+            ->first();
+
+        if (empty($cli->id)) {
+
+            DB::table('task_client')
+                ->insert(
+                    [
+                        'task_id' => $task->id,
+                        'client_id' => $client->id
+                    ]
+                );
+    
+    
+        }
+
+        return redirect()->route('admin.tasks.show',$task_id);
+    }
+
     public function edit(Task $task)
     {
         abort_if(Gate::denies('task_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
@@ -57,7 +92,25 @@ class TaskController extends Controller
     {
         abort_if(Gate::denies('task_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        return view('admin.tasks.show', compact('task'));
+
+    
+        $clients = Db::table("tasks")->select("clientes.*",'task_client.id as tk_id')
+        ->join("task_client","task_client.task_id","tasks.id")
+        ->join("clientes","task_client.client_id","clientes.id")
+        ->get();
+
+        $clients_all = Cliente::get();
+
+        return view('admin.tasks.show', compact('task','clients','clients_all'));
+    }
+
+    public function destroyTaskClient(Request $request)
+    {
+
+        DB::table('task_client')
+            ->where('id', $request->get('id'))->delete();
+
+        return 'ok';
     }
 
     public function destroy(Task $task)
