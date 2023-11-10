@@ -34,13 +34,14 @@ class Task extends Model
     ];
 
     public const DIAS_SELECT = [
-        '0' => 'Domingo',
+        
         '1' => 'Lunes',
         '2' => 'Martes',
         '3' => 'Miercoles',
         '4' => 'Jueves',
         '5' => 'Viernes',
         '6' => 'Sábado',
+		'7' => 'Domingo',
     ];
 
     protected $fillable = [
@@ -49,8 +50,8 @@ class Task extends Model
         'description',
         'due_date',
         'final_date',
-        'start',
-        'end',
+        'hora_inicio',
+        'hora_final',
         'dias',
         'created_at',
         'updated_at',
